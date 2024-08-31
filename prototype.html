@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title></title>
+  <style>
+    html {
+      font-size: 18px;
+    }
+
+    #available {
+      display: flex;
+      gap: 1rem;
+      min-height: 15rem;
+    }
+
+    i {
+      font-style: normal;
+      color: dodgerblue;
+      font-weight: bold;
+    }
+
+    button {
+      border: 1px solid;
+      border-radius: 4px;
+      font-size: 1rem;
+    }
+
+    button:disabled:hover {
+      background: rgba(233, 233, 237, 0.5);
+    }
+
+    button.available {
+      width: 12rem;
+      height: 15rem;
+      border: 1px solid;
+      background: none;
+      padding: 1rem;
+      border-radius: 5px;
+      display: flex;
+      flex-direction: column;
+      align-items: top;
+      position: relative;
+    }
+
+    button.available:hover {
+      background: lightgray;
+      cursor: pointer;
+    }
+
+    .value {
+      position: absolute;
+      top: 0.5rem;
+      left: 0.5rem;
+    }
+
+    .vp-wrapper {
+      position: absolute;
+      bottom: 0.5rem;
+      left: calc(50% - 5px);
+    }
+
+    .vp {
+      padding: 0 0.35rem;
+      border: 1px solid;
+      background: orange;
+      border-radius: 50% 50% 50% 50% / 12% 12% 88% 88%;
+    }
+
+    #reroll {
+      margin-top: 1rem;
+      padding: 0.25rem 0.5rem;
+      margin-bottom: 2rem;
+    }
+
+    #rules {
+      margin-top: 4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+  </style>
+</head>
+<body>
+<main>
+  <div id="available"></div>
+  <button id="reroll">Reroll</button>
+  <div>
+    <b>Built Buildings</b>
+    <ul id="builtBuildings">
+      <li>Tent</li>
+      <li>Tent</li>
+    </ul>
+  </div>
+  <div>
+    <b>Negative <span class="vp">&nbsp;</span> victory points</b>: <span id="counter">0</span>
+  </div>
+  <div id="rules">
+    <div>
+      <b>Objective</b>
+      <ul>
+        <li>Earn the most <span class="vp">&nbsp;</span> victory points at the end of 12 rounds</li>
+      </ul>
+    </div>
+
+    <div>
+      <b>How to Play</b>
+      <ul>
+        <li>You start the game with 2 <b>Tents</b> already built</li>
+        <li>Each round you are dealt 1 building card for every <b>Tent</b> you have built</li>
+        <li>You must choose one of the building cards to build. You may reroll once per round to get a new set of building cards</li>
+        <li>Each building card has a value (top left corner), a description of what the building does, and how many <span class="vp">&nbsp;</span> victory points (bottom) it's worth</li>
+        <li>If the total value of all dealt cards is equal to or greater than 13, you lose <span class="vp">2</span> victory point and cannot reroll that round</li>
+        <li>Each <b>Tent</b> and <b>House</b> needs <i>food</i>, <i>water</i>, <i>housing</i>, and <i>light</i>. Not providing them with these needs is worth negative <span class="vp">&nbsp;</span> victory points at the end of the game</li>
+      </ul>
+    </div>
+
+    <div>
+      <b>End of Game Scoring</b>
+      <ul>
+        <li>Total <span class="vp">&nbsp;</span> victory points of every built building</li>
+        <li>Multiply Total by 2 if you built <b>Walls</b>
+        <li><span class="vp">-2</span> victory point every time the value of cards was 13 or more</li>
+        <li><span class="vp">-1</span> victory point for every unfilled need (<i>food</i>, <i>water</i>, <i>housing</i>, <i>light</i>) for each <b>Tent</b> and <b>House</b></li>
+      </ul>
+    </div>
+
+    <div>
+      <b>The Buildings</b>
+      <ol>
+        <li><b>Tent</b> - Draw 1 additional building card per round. Each <b>Tent</b> needs <i>food</i>, <i>water</i>, <i>housing</i>, <i>light</i></li>
+        <li><b>Well</b> - Provides <i>water</i> for up to 3 <b>Tents</b> and <b>Houses</b></li>
+        <li><b>Farm</b> - Provides <i>food</i> for up to 2 <b>Tents</b> and <b>Houses</b></li>
+        <li><b>Lumber Mill</b> - Adds the <b>House</b> building to the deck. <b>House</b> cards are not available until this is built</li>
+        <li><b>Stone Mason</b> - Adds the <b>Light Tower</b> and <b>Walls</b> buildings to the deck. <b>Light Tower</b> and <b>Walls</b> cards are not available until this is built</li>
+        <li><b>House</b> - Replaces a <b>Tent</b> with a <b>House</b>, fulfilling the <i>housing</i> need for it</li>
+        <li><b>Wall</b> - Earn 2x <span class="vp">&nbsp;</span> victory points for every building at the end of the game</li>
+        <li><b>Light Tower</b> - Provides <i>light</i> for all <b>Tents</b> and <b>Houses</b></li>
+      </ul>
+  </div>
+  <div id="built"></div>
+</main>
+<script src="./src/libs/kontra.js"></script>
+<script>
+  const { randInt } = kontra;
+
+  const buildings = {
+    Tent: {
+      desc: 'Draw 1 additional building card per round. Negative <span class="vp">&nbsp;</span> victory points if needs are not met',
+      value: 1,
+      vp: 1
+    },
+    Well: {
+      desc: 'Provides <i>water</i> for up to 3 <b>Tents</b> and <b>Houses</b>',
+      value: 2,
+      vp: 1
+    },
+    Farm: {
+      desc: 'Provides <i>food</i> for up to 2 <b>Tents</b> and <b>Houses</b>',
+      value: 3,
+      vp: 1
+    },
+    'Lumber Mill': {
+      desc: 'Adds the <b>House</b> building to the deck, making them available to be drawn in future rounds',
+      value: 4,
+      vp: 1
+    },
+    'Stone Mason': {
+      desc: 'Adds the <b>Light Tower</b> and <b>Walls</b> buildings to the deck, making them available to be drawn in future rounds',
+      value: 5,
+      vp: 1
+    },
+    House: {
+      desc: 'Replaces a <b>Tent</b> with a <b>House</b>, fulfilling the <i>housing</i> need for it',
+      value: 6,
+      vp: 2
+    },
+    'Light Tower': {
+      desc: 'Provides <b>Light</b> for all <b>Tents</b> and <b>Houses</b>',
+      value: 7,
+      vp: 2
+    },
+    Walls: {
+      desc: 'Double the <span class="vp">&nbsp;</span> victory points of every building',
+      value: 8,
+      vp: 0
+    }
+  };
+
+  const buildingPool = ['Tent', 'Well', 'Farm', 'Lumber Mill', 'Stone Mason'];
+  const built = ['Tent', 'Tent'];
+  let negativeCount = 0;
+  let round = 0;
+
+  reroll.addEventListener('click', () => {
+    available.innerHTML = '';
+    getCards();
+    reroll.setAttribute('disabled', '');
+  });
+
+  getCards();
+
+  function getCards() {
+    round++;
+    available.innerHTML = '';
+
+    setTimeout(() => {
+      let total = 0;
+
+      for (let i = 0; i < built.filter(b => ['Tent', 'House'].includes(b)).length; i++) {
+        const name = buildingPool[ randInt(0, buildingPool.length - 1) ];
+        const { desc, value, vp } = buildings[name];
+        const btn = document.createElement('button');
+        btn.setAttribute('class', 'available');
+        btn.innerHTML = `
+          <b>${name}</b>
+          <p>${desc}</p>
+          <span class="value">${value}</span>
+          <span class="vp-wrapper"><span class="vp">${vp}</span></span>
+        `;
+        btn.addEventListener('click', () => {
+          reroll.removeAttribute('disabled');
+          const li = document.createElement('li');
+          li.textContent = name;
+
+          if (name === 'House') {
+            const index = built.indexOf('Tent');
+            if (index !== -1) {
+              built.splice(i, 1, 'House');
+              builtBuildings.children[i].replaceWith(li);
+            }
+          }
+          else {
+            builtBuildings.append(li);
+            built.push(name);
+          }
+
+          if (name === 'Lumber Mill') {
+            buildingPool.push('House');
+          }
+          else if (name === 'Stone Mason') {
+            buildingPool.push('Light Tower', 'Walls');
+          }
+
+          if (round <= 12) {
+            getCards();
+          }
+          else {
+            setTimeout(() => {
+              const houses = built.filter(b => b === 'House').length;
+              const tents = built.filter(b => b === 'Tent').length;
+              const needs = tents + houses;
+              const food = built.filter(b => b === 'Farm').length * 2;
+              const water = built.filter(b => b === 'Well').length * 3;
+              const light = built.includes('Light Tower');
+              const housing = built.filter(b => b === 'House').length;
+              const unfulfilled =
+                Math.max(0, needs - food * 2) +
+                Math.max(0, needs - water * 3) +
+                (light ? 0 : needs) +
+                tents
+
+
+              const buildingVps = built.reduce((acc, b) => acc + buildings[b].vp, 0);
+              const double = built.includes('Walls');
+              const total =
+                buildingVps +
+                (double ? buildingVps * 2 : 0) -
+                negativeCount -
+                unfulfilled
+
+
+              alert(`game over
+
+  total buildings: ${buildingVps}
+  walls: ${ double ? '2x' : '0' }
+  negative vp: -${negativeCount}
+  unfulfilled needs: -${unfulfilled}
+
+  TOTAL: ${total}`);
+            });
+          }
+        });
+
+        total += value;
+        available.append(btn);
+      }
+
+      if (total >= 13) {
+        negativeCount += 2;
+        counter.textContent = -negativeCount;
+        setTimeout(() => {
+          alert(`Total of all cards is ${total}. -2 victory points`);
+        }, 100);
+        reroll.setAttribute('disabled', '');
+      }
+    }, 100);
+  }
+</script>
+</body>
+</html>

@@ -1,6 +1,6 @@
 /**
  * @preserve
- * Kontra.js v10.0.1
+ * Kontra.js v10.0.2
  */
 var kontra = (function () {
 
@@ -3482,12 +3482,12 @@ var kontra = (function () {
 
       // override the objects render function to keep track of render
       // order
-      if (!object._r) {
-        object._r = object.render;
+      if (!object.__r) {
+        object.__r = object.render;
 
         object.render = function () {
           pointer._cf.push(this);
-          this._r();
+          this.__r();
         };
 
         pointer._o.push(object);
@@ -3523,8 +3523,8 @@ var kontra = (function () {
 
       // restore original render function to no longer track render
       // order
-      object.render = object._r;
-      object._r = 0; // 0 is the shortest falsy value
+      object.render = object.__r;
+      object.__r = 0; // 0 is the shortest falsy value
 
       removeFromArray(pointer._o, object);
     });
