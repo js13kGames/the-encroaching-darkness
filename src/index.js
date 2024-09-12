@@ -875,11 +875,11 @@ import { setImagePath, loadImage, getSeed, seedRand, rand, randInt, init, initPo
     let colValue = buildings[name];
     let dupCol;
     for (let i = 0; i < 11; i++) {
-      const rowName = grid[r][i];
+      const rowName = grid[r][i][0];
       rowValue += buildings[rowName] ?? 0;
       dupRow ||= rowName == name
 
-      const colName = grid[i][c];
+      const colName = grid[i][c][0];
       colValue += buildings[colName] ?? 0;
       dupCol ||= colName == name
     }

@@ -237,7 +237,7 @@
     <div class="tile" style="background: #CCBEF0 url(./assets/tiles.png)"></div>
     <!-- <div class="hcenter">6</div> -->
     <div class="span2">
-      <b>Churches</b> reduce the total value of the row and column they belong to by 3. This effect is cumulative, so two <b>Churches</b> will reduce the total value by 6. <b>Churches</b> want to be far away from the <b>Darkness</b> and other <b>Churches</b>.
+      <!--<b>Churches</b> reduce the total value of the row and column they belong to by 3. This effect is cumulative, so two <b>Churches</b> will reduce the total value by 6. --><b>Churches</b> want to be far away from the <b>Darkness</b> and other <b>Churches</b>.
       <ul>
         <li>+1 point for each square between the <b>Church</b> and the nearest <b>Darkness</b> or other <b>Church</b></li>
       </ul>
@@ -286,11 +286,12 @@
         <li>Each Tile has a building, a value, and an area.</li>
         <li>You cannot place a Tile if any part of its area overlaps another building or area.</li>
         <!-- <li>If the total value of all dealt Buildings is equal to or greater than 13, the <b>Darkness</b> will grow and you cannot reroll that round</li> -->
-        <li>When placing a Tile, if the total value of all buildings in the same row or column as the placed building is equal to or great than 13, the <b>Darkness</b> will grow</li>
+        <li>When placing a Tile, if the total value of all buildings in the same row or column as the placed building is equal to or great than 13, the <b>Darkness</b> will grow.</li>
+        <li>At the end of every round the <b>Darkness</b> will grow.</li>
         <li><u>Be aware</u> that <b>Darkness</b> can overtake other tiles and even your buildings (removing them from the board) unless you have a <b>Light Tower</b> nearby.</li>
 <!--         <li>At the start of round 13 the <b>Darkness</b> will grow twice.</li>
         <li>Starting on round 13 and above, the <b>Darkness</b> intensifies and will grow twice instead of once when the value of all dealt Buildings is 13 or more.</li> -->
-        <li>For scoring purposes, nearby and adjacency is calculated using the building itself and not the area of the Tile.
+        <li>For scoring purposes, nearby and adjacency is calculated using the building square and not the area of the Tile.</li>
       </ul>
     </div>
   </div>
