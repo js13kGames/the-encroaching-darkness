@@ -2,7 +2,7 @@ import { setImagePath, loadImage, getSeed, seedRand, rand, randInt, init, initPo
 
 (async () => {
   // TODO: make root before publish
-  setImagePath('/assets')
+  setImagePath('./assets')
   const tileSheet = await loadImage('tiles.png');
 
   seedRand()
