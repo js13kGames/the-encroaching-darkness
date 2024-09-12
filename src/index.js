@@ -16,11 +16,11 @@ import { setImagePath, loadImage, getSeed, seedRand, rand, randInt, init, initPo
   canvas.width = size * 50;
   canvas.height = size * 50;
   const ctx = canvas.getContext('2d');
-  const grid = [];
+  window.grid = [];
   const indices = [];
-  let placing = 'H';
+  let placing;
   const darkness = [];
-  const playerBuildings = [];
+  // const playerBuildings = [];
 
   // fixed tetrominoes (unique pieces taking into account
   // rotation and flipping)
@@ -171,7 +171,7 @@ import { setImagePath, loadImage, getSeed, seedRand, rand, randInt, init, initPo
   //   [17]
   // ];
 
-  const lumberMillIncrease = 25;
+  const sawmillIncrease = 35;
   const stoneMasonIncrease = 35;
 
   // const groupedGrid = [];
@@ -493,33 +493,49 @@ import { setImagePath, loadImage, getSeed, seedRand, rand, randInt, init, initPo
   const buildings = {
     H: 1,
     W: 2,
+    F: 3,
     LM: 4,
     SM: 5,
     C: 6,
-    F: 3,
     LT: 7
   };
-
-  const buildingPool = ['H', 'W', 'F', 'LM', 'SM'];
-  const buildingChance = {
-    H: 100,
-    W: 100,
-    F: 0,
-    LM: 100,
-    SM: 100,
-    C: 0,
-    LT: 0
+  const colors = {
+    1: '#c5dec1',
+    2: '#dfdfdf',
+    H: '#fa8072',
+    W: '#b3c6e0',
+    F: '#f7e7aa',
+    LM: '#c9a999',
+    SM: '#cfcfc4',
+    C: '#CCBEF0',
+    LT: '#ffcd91'
   };
-  const built = [];
-  let round = 0;
 
-  reroll.addEventListener('click', () => {
-    available.innerHTML = '';
-    getCards(false);
-    reroll.setAttribute('disabled', '');
+  // const buildingPool = ['H', 'W', 'F', 'LM', 'SM'];
+  // const buildingChance = {
+  //   H: 100,
+  //   W: 100,
+  //   F: 0,
+  //   LM: 100,
+  //   SM: 100,
+  //   C: 0,
+  //   LT: 0
+  // };
+  // const built = [];
+  let round = 1;
+
+  // reroll.addEventListener('click', () => {
+  //   available.innerHTML = '';
+  //   getCards(false);
+  //   reroll.setAttribute('disabled', '');
+  // });
+  rotate.addEventListener('click', () => {
+    if (placing) {
+      placing[2] = rotateShape(placing[2])
+    }
   });
 
-  // getCards();
+  getCards(false);
 
   function randBuilding() {
     // Calculate the sum of all portions.
@@ -544,41 +560,127 @@ import { setImagePath, loadImage, getSeed, seedRand, rand, randInt, init, initPo
     throw new Error('randBuilding failed!');
   }
 
+  const shapes = [
+    [
+      [1]
+    ],
+    [
+      [1,1],
+      [0,0]
+    ],
+    [
+      [0,0,0],
+      [1,1,1],
+      [0,0,0]
+    ],
+    [
+      [1,1],
+      [0,1]
+    ]
+  ]
+
+  // rotate an NxN matrix 90deg
+  // @see https://codereview.stackexchange.com/a/186834
+  function rotateShape(matrix) {
+    const N = matrix.length - 1;
+    const result = matrix.map((row, i) =>
+      row.map((val, j) => matrix[N - j][i])
+    );
+
+    return result;
+  }
+
+  const buttonCanvas = document.createElement('canvas');
+  const buttonCtx = buttonCanvas.getContext('2d');
+
   function getCards(grow = false) {
     setTimeout(() => {
-      let total = 0;
-      for (let i = 0; i < built.filter(b => b == 'H').length; i++) {
-        const name = randBuilding();
+      // let total = 0;
+      for (let i = 0; i < 3/*built.filter(b => b == 'H').length*/; i++) {
+        // const name = randBuilding();
+        const names = Object.keys(buildings);
+        const name = names[ randInt(0, names.length - 1) ];
         const value = buildings[name];
+        // const value = randInt(1, 7);
+
+        // clone array
+        let shape = shapes[ randInt(0,3) ].map(r => r.slice());
+
+        // randomly rotate
+        for (let i = 0; i < randInt(0, 3); i++) {
+          shape = rotateShape(shape)
+        }
+        // randomly place building
+        const numRows = shape.length;
+        const numCols = shape[0].length;
+        let row, col;
+
+        while (true) {
+          row = randInt(0, numRows - 1);
+          col = randInt(0, numCols - 1);
+          if (shape[row][col]) break;
+        }
+        shape[row][col] = name;
+
+        console.log({shape, row, col, name});
+        buttonCanvas.width = numCols * 50 + 2;
+        buttonCanvas.height = numRows * 50 + 2;
+
+        buttonCtx.strokeStyle = 'grey';
+        buttonCtx.font = '18px Arial';
+        buttonCtx.textBaseline = 'middle';
+        buttonCtx.textAlign = 'center';
+        buttonCtx.fillStyle = colors[name];
+
+        for (let r = 0; r < numRows; r++) {
+          for (let c = 0; c < numCols; c++) {
+            if (shape[r][c]) {
+              buttonCtx.fillRect(c * 50 + 1, r * 50 + 1, 50, 50);
+              buttonCtx.strokeRect(c * 50 + 1, r * 50 + 1, 50, 50);
+            }
+          }
+        }
+
+        buttonCtx.fillStyle = 'black';
+        const [x, y] = imagePos[name] ?? [];
+        buttonCtx.drawImage(tileSheet, x, y, 50, 50, col * 50, row * 50, 50, 50);
+        buttonCtx.fillText(value, col * 50 + 9, row * 50 + 11);
+
+        const imgData = buttonCanvas.toDataURL();
+        const img = document.createElement('img');
+        img.src = imgData;
+
         const btn = document.createElement('button');
         btn.setAttribute('class', 'available');
-        btn.innerHTML = `
-          <b>${name}</b>
-          <span class="value">${value}</span>
-        `;
+
+        btn.append(img);
         btn.addEventListener('click', () => {
-          placing = name;
+          placing = [
+            name,
+            value,
+            shape
+          ];
           btn.classList.add('selected');
         });
 
-        total += value;
+        // total += value;
         available.append(btn);
       }
 
-      built.map(b => {
-        if (b == 'C') {
-          total -= 3;
-        }
-      });
-      totalValue.textContent = total;
+      // built.map(b => {
+      //   if (b == 'C') {
+      //     total -= 3;
+      //   }
+      // });
+      // totalValue.textContent = total;
 
-      if (total >= 13) {
+      if (false/*total >= 13*/) {
         growDarkness(1);
 
         setTimeout(() => {
           alert(`Total of all cards is >= 13. Darkness grows`);
         }, 100);
-        reroll.setAttribute('disabled', '');
+        // reroll.setAttribute('disabled', '');
       }
       else if (grow) {
         growDarkness(1);
@@ -614,7 +716,7 @@ import { setImagePath, loadImage, getSeed, seedRand, rand, randInt, init, initPo
     // to it
     const growableTiles = darkness
       .map(([ tileR, tileC ]) => {
-        return [[tileR, tileC]].concat(getAdjacentTiles(tileR, tileC)
+        return getAdjacentTiles(tileR, tileC)
           .map(([r, c]) => {
 
             // tile already a darkness tile
@@ -628,10 +730,11 @@ import { setImagePath, loadImage, getSeed, seedRand, rand, randInt, init, initPo
             }
 
             return [r, c];
-          }))
+          })
           .filter(tile => !!tile)
       })
       .filter(tile => tile.length)
+      .sort((a, b) => b.length - a.length)
       // .sort((a, b) => {
       //   const aRow = a[0][0];
       //   const aCol = a[0][1];
@@ -677,16 +780,16 @@ import { setImagePath, loadImage, getSeed, seedRand, rand, randInt, init, initPo
       growableTiles[index].map(([ r, c ]) => {
         if (grid[r][c] < 0) return;
 
-        if (grid[r][c] == 'LM') {
-          buildingChance.C = Math.max(0, buildingChance.C - lumberMillIncrease);
-          buildingChance.F = Math.max(0, buildingChance.F - lumberMillIncrease);
-          // buildingChance.B = Math.max(0, buildingChance.B - lumberMillIncrease);
-          // buildingPool.push('C', 'B');
-        }
-        else if (grid[r][c] == 'SM') {
-          // buildingPool.push('LT'/*, 'Wa'*/);
-          buildingChance.LT = Math.min(0, buildingChance.LT - stoneMasonIncrease);
-        }
+        // if (grid[r][c] == 'LM') {
+        //   buildingChance.C = Math.max(0, buildingChance.C - sawmillIncrease);
+        //   buildingChance.F = Math.max(0, buildingChance.F - sawmillIncrease);
+        //   // buildingChance.B = Math.max(0, buildingChance.B - sawmillIncrease);
+        //   // buildingPool.push('C', 'B');
+        // }
+        // else if (grid[r][c] == 'SM') {
+        //   // buildingPool.push('LT'/*, 'Wa'*/);
+        //   buildingChance.LT = Math.min(0, buildingChance.LT - stoneMasonIncrease);
+        // }
 
         grid[r][c] = -1;
         darkness.push([r, c]);
@@ -725,14 +828,15 @@ import { setImagePath, loadImage, getSeed, seedRand, rand, randInt, init, initPo
   }
 
   function isNearbyLightTower(tileR, tileC) {
-    if (grid[tileR][tileC] == 'LT') {
+    if (grid[tileR][tileC][0] == 'LT') {
       return true;
     }
 
     return getNearbyTiles(tileR, tileC).some(([r, c]) => {
-      return grid[r][c] == 'LT'
+      return grid[r][c][0] == 'LT'
     });
   }
+  window.isNearbyLightTower = isNearbyLightTower;
 
   onPointer('down', () => {
     if (!placing) {
@@ -742,6 +846,22 @@ import { setImagePath, loadImage, getSeed, seedRand, rand, randInt, init, initPo
     const r = pointer.y / 50 | 0;
     const c = pointer.x / 50 | 0;
 
+    const [ name, value, shape ] = placing;
+    const [ buildingRow, buildingCol ] = getShapeBuildingPos(shape);
+    placing.push([r, c]);
+
+    // can't place already something there
+    for (let row = 0; row < shape.length; row++) {
+      for (let col = 0; col < shape[0].length; col++) {
+        if (
+          shape[row][col] &&
+          grid[r + row - buildingRow][c + col - buildingCol]
+        ) {
+          return;
+        }
+      }
+    }
+
     // let areaValue = buildings[placing];
     // let dupArea;
     // getTetrominoArea(r, c).map(([ tileR, tileC ]) => {
@@ -749,86 +869,74 @@ import { setImagePath, loadImage, getSeed, seedRand, rand, randInt, init, initPo
     //   areaValue += buildings[name] ?? 0;
     //   dupArea ||= name == placing;
     // });
-    let rowValue = buildings[placing];
+    // const [ name ] = placing;
+    let rowValue = buildings[name];
     let dupRow;
-    let colValue = buildings[placing];
+    let colValue = buildings[name];
     let dupCol;
     for (let i = 0; i < 11; i++) {
       const rowName = grid[r][i];
       rowValue += buildings[rowName] ?? 0;
-      dupRow ||= rowName == placing
+      dupRow ||= rowName == name
 
       const colName = grid[i][c];
       colValue += buildings[colName] ?? 0;
-      dupCol ||= colName == placing
+      dupCol ||= colName == name
     }
 
-    if (
-      !grid[r][c] /*&&
-      // areaValue < 13 &&
-      rowValue < 13 &&
-      colValue < 13 /*&&
-      !dupRow && !dupCol /*&& !dupArea*/
-    ) {
-      grid[r][c] = placing;
-      playerBuildings.push([r,c]);
-
-      reroll.removeAttribute('disabled');
-      built.push(placing);
-
-      if (placing == 'LM') {
-        buildingChance.C = Math.min(100, buildingChance.C +
-          lumberMillIncrease);
-        buildingChance.F = Math.min(100, buildingChance.F + lumberMillIncrease);
-        // buildingChance.B = Math.min(100, buildingChance.B + lumberMillIncrease);
-        // buildingPool.push('C', 'B');
-      }
-      else if (placing == 'SM') {
-        // buildingPool.push('LT'/*, 'Wa'*/);
-        buildingChance.LT = Math.min(100, buildingChance.LT + stoneMasonIncrease);
-      }
-      // else if (placing == 'LT') {
-      //   getNearbyTiles(r, c).map(([tileR, tileC]) => {
-      //     if (grid[tileR][tileC] == -1) {
-      //       grid[tileR][tileC] = 0;
-      //     }
-      //   });
-      // }
-
-      if (rowValue > 12) {
-        alert('Total row value >= 13. Darkness grows');
-        growDarkness(1);
-      }
-      if (colValue > 12) {
-        alert('Total col value >= 13. Darkness grows');
-        growDarkness(1);
-      }
-
-      if (built.length < 3) {
-        placing = 'H';
-      }
-      else {
-        placing = 0;
-        round++;
-        roundS.textContent = round;
-        available.innerHTML = '';
-
-        if (round > 1) {
-          growDarkness(1);
-        }
-
-        // darkness spreads twice on round 13
-        if (round == 13) {
-          alert(`The Darkness intensifies`);
-          growDarkness(3);
-        }
-
-        if (round <= 16) {
-          getCards();
+    for (let row = 0; row < shape.length; row++) {
+      for (let col = 0; col < shape[0].length; col++) {
+        if (shape[row][col]) {
+          grid[r + row - buildingRow][c + col - buildingCol] = placing;
         }
       }
+    }
+    grid[r][c] = placing;
+
+    if (rowValue > 12) {
+      alert('Total row value >= 13. Darkness grows');
+      growDarkness(1);
+    }
+    if (colValue > 12) {
+      alert('Total col value >= 13. Darkness grows');
+      growDarkness(1);
+    }
+
+    placing = 0;
+    round++;
+    roundS.textContent = round;
+    available.innerHTML = '';
+
+    // if (round > 1) {
+      growDarkness(1);
+    // }
+
+    // darkness spreads twice on round 13
+    if (round == 13) {
+      alert(`The Darkness intensifies`);
+      growDarkness(3);
+    }
+
+    if (round <= 16) {
+      getCards();
     }
   });
+
+  document.addEventListener('keypress', ({code}) => {
+    if (placing && code == 'KeyR') {
+      placing[2] = rotateShape(placing[2]);
+    }
+  });
+
+  function getShapeBuildingPos(shape) {
+    for (let row = 0; row < shape.length; row++) {
+      for (let col = 0; col < shape[0].length; col++) {
+        if (buildings[ shape[row][col] ]) {
+          return [row, col];
+        }
+      }
+    }
+  }
 
   // const fillColors = [
   //   'yellow',
@@ -974,25 +1082,34 @@ import { setImagePath, loadImage, getSeed, seedRand, rand, randInt, init, initPo
             ctx.fillRect(c * 50, r * 50, 50, 50);
           }
 
-          const name = grid[r][c];
-          const [x, y] = imagePos[name] ?? [];
-          if (name == 1) {
-            ctx.save();
-            ctx.fillStyle = 'green';
-            ctx.globalAlpha = 0.25
+          const tile = grid[r][c];
+          if (!tile) {
+            continue;
+          }
+          const name = tile[0] ?? tile;
+          const [ x, y ] = imagePos[name] ?? [];
+
+          // colors
+          if (name &&
+            colors[name] ||
+            name[0] == '#'
+          ) {
+            const color = colors[name] || name;
+            ctx.fillStyle = color;
             ctx.fillRect(c * 50, r * 50, 50, 50);
-            ctx.restore();
+          }
+
+          // images
+          if (name == 1) {
             ctx.drawImage(tileSheet, x, y, 50, 50, c * 50, r * 50, 50, 50)
           }
           else if (name == 2) {
-            ctx.save();
-            ctx.fillStyle = 'grey';
-            ctx.globalAlpha = 0.25
-            ctx.fillRect(c * 50, r * 50, 50, 50);
-            ctx.restore();
             ctx.drawImage(tileSheet, x, y, 50, 50, c * 50, r * 50, 50, 50)
           }
-          else if (typeof name == 'string') {
+          else if (
+            tile[3]?.[0] == r &&
+            tile[3][1] == c
+          ) {
             ctx.drawImage(tileSheet, x, y, 50, 50, c * 50, r * 50, 50, 50)
             ctx.fillStyle = 'black';
             ctx.fillText(buildings[name], c * 50 + 9, r * 50 + 11);
@@ -1000,21 +1117,78 @@ import { setImagePath, loadImage, getSeed, seedRand, rand, randInt, init, initPo
         }
       }
 
+      for (let r = 0; r < size; r++) {
+        for (let c = 0; c < size; c++) {
+          const tile = grid[r][c];
+          if (typeof tile != 'object') {
+            continue;
+          }
+
+          ctx.strokeStyle = 'black';
+          ctx.lineWidth = 3;
+          const [ name ] = tile;
+          const color = colors[name] || name;
+
+          if (grid[r - 1]?.[c] != tile) {
+            ctx.beginPath();
+            ctx.moveTo(c * 50, r * 50);
+            ctx.lineTo((c + 1) * 50, r * 50);
+            ctx.stroke();
+          }
+          if (grid[r][c + 1] != tile) {
+            ctx.beginPath();
+            ctx.moveTo((c + 1) * 50, r * 50);
+            ctx.lineTo((c + 1) * 50, (r + 1) * 50);
+            ctx.stroke();
+          }
+          if (grid[r + 1]?.[c] != tile) {
+            ctx.beginPath();
+            ctx.moveTo(c * 50, (r + 1) * 50);
+            ctx.lineTo((c + 1) * 50, (r + 1) * 50);
+            ctx.stroke();
+          }
+          if (grid[r][c - 1] != tile) {
+            ctx.beginPath();
+            ctx.moveTo(c * 50, r * 50);
+            ctx.lineTo(c * 50, (r + 1) * 50);
+            ctx.stroke();
+          }
+        }
+      }
+
       if (placing) {
         const r = pointer.y / 50 | 0;
         const c = pointer.x / 50 | 0;
+        const [ name, value, shape ] = placing;
 
-        if (grid[r] && !grid[r][c]) {
+        ctx.save();
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = 'red';
+        // ctx.setLineDash([15,15]);
+
+        const [ buildingRow, buildingCol ] = getShapeBuildingPos(shape);
+
+        for (let row = 0; row < shape.length; row++) {
+          for (let col = 0; col < shape[0].length; col++) {
+            if (shape[row][col]) {
+              ctx.strokeRect((c + col - buildingCol) * 50, (r + row - buildingRow) * 50, 50, 50);
+            }
+          }
+        }
+        ctx.restore();
+
+        // if (grid[r] && !grid[r][c]) {
           ctx.fillStyle = 'black';
 
-          ctx.save();
-          ctx.globalAlpha = 0.25
-          ctx.fillRect(c * 50, r * 50, 50, 50);
-          ctx.restore();
+          // ctx.save();
+          // ctx.globalAlpha = 0.25
+          // ctx.fillRect(c * 50, r * 50, 50, 50);
+          // ctx.restore();
 
-          const [x, y] = imagePos[placing];
+          const [x, y] = imagePos[name];
           ctx.drawImage(tileSheet, x, y, 50, 50, c * 50, r * 50, 50, 50)
-        }
+          ctx.fillText(value, c * 50 + 9, r * 50 + 11);
+        // }
       }
     }
   }).start();

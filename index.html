@@ -116,15 +116,13 @@
     }
 
     button.available {
-      width: 4rem;
-      height: 4rem;
+      max-width: 9.5rem
       border: 1px solid;
       background: none;
       padding: 1rem;
       border-radius: 5px;
       display: flex;
       flex-direction: column;
-      align-items: top;
       position: relative;
     }
 
@@ -185,64 +183,61 @@
 
     <div class="tile" style="background: #c5dec1 url(/assets/tiles.png) -100px 0"></div>
     <!-- <div></div> -->
-    <div class="span2"><b>Trees</b>. Cannot build buildings on these squares.</div>
+    <div class="span2"><b>Forest</b>. Cannot build buildings on these squares.</div>
 
     <div class="tile" style="background: #dfdfdf url(/assets/tiles.png) -250px 0"></div>
     <!-- <div></div> -->
-    <div class="span2"><b>Stone</b>. Cannot build buildings on these squares.</div>
+    <div class="span2"><b>Mountain</b>. Cannot build buildings on these squares.</div>
 
-    <div class="tile" style="background: url(/assets/tiles.png) -150px 0"></div>
+    <div class="tile" style="background: #fa8072 url(/assets/tiles.png) -150px 0"></div>
     <!-- <div class="hcenter">1</div> -->
     <div class="span2">
-      <b>Houses</b> need <i>food</i>, <i>water</i>, and <i>light</i>, and they don't want to live nearby <b>Darkness</b>. Each <b>House</b> allows drawing an additional Building per round.
+      <b>Houses</b> want to be adjacent lots of other <b>Houses</b>.
       <ul>
-        <li>+2 points if not nearby <b>Darkness</b></li>
-        <li>-1 point for each unfulfilled need (<i>food</i>, <i>water</i>, and <i>light</i>)</li>
+        <li>+2 points for each <b>House</b> in a group of 2 or more adjacent <b>Houses</b></li>
       </ul>
     </div>
 
-    <div class="tile" style="background: url(/assets/tiles.png) -400px 0"></div>
+    <div class="tile" style="background: #b3c6e0 url(/assets/tiles.png) -400px 0"></div>
     <!-- <div class="hcenter">2</div> -->
     <div class="span2">
-      <b>Wells</b> provide <i>water</i> to each adjacent <b>House</b>.
+      <b>Lakes</b> want to be nearby lots of other tiles.
       <ul>
-        <li>+1 point</li>
+        <li>+1 point for each nearby tile</li>
       </ul>
     </div>
 
-    <div class="tile" style="background: url(/assets/tiles.png) -50px 0"></div>
+    <div class="tile" style="background: #f7e7aa url(/assets/tiles.png) -50px 0"></div>
     <!-- <div class="hcenter">3</div> -->
     <div class="span2">
-      <b>Farms</b> provide <i>food</i> for up to 2 <b>Houses</b>.
+      <b>Farms</b> want to be in large areas.
       <ul>
-        <li>+1 point</li>
+        <li>+1 point for each square in a <b>Farm</b> area.</li>
       </ul>
     </div>
 
-    <div class="tile" style="background: url(/assets/tiles.png) -300px 0"></div>
+    <div class="tile" style="background: #c9a999 url(/assets/tiles.png) -300px 0"></div>
     <!-- <div class="hcenter">4</div> -->
     <div class="span2">
-      <b>Sawmills</b> increase the chance to draw a <b>Farm</b> or <b>Church</b> by 25% (they start at 0%). <b>Houses</b> don't want to be nearby them.
+      <b>Sawmills</b> want to be nearby <b>Forests</b>.
       <ul>
-        <li>+1 point for each nearby <b>Tree</b></li>
-        <li>-1 point if nearby a <b>House</b></li>
+        <li>+1 point for each nearby <b>Forest</b></li>
       </ul>
     </div>
 
-    <div class="tile" style="background: url(/assets/tiles.png) -350px 0"></div>
+    <div class="tile" style="background: #cfcfc4 url(/assets/tiles.png) -350px 0"></div>
     <!-- <div class="hcenter">5</div> -->
     <div class="span2">
-      <b>Stone Masons</b> increase the chance to draw a <!--<b>Wall</b> and--> <b>Light Tower</b> by 20% (they start at 0%). <b>Houses</b> don't want to be nearby them.
+      <b>Stone Masons</b> want to be nearby <b>Mountains</b>.
       <ul>
-        <li>+1 point for each nearby <b>Stone</b></li>
-        <li>-1 point if nearby a <b>House</b></li>
+        <li>+1 point for each nearby <b>Mountain</b></li>
       </ul>
     </div>
 
-    <div class="tile" style="background: url(/assets/tiles.png)"></div>
+    <div class="tile" style="background: #CCBEF0 url(/assets/tiles.png)"></div>
     <!-- <div class="hcenter">6</div> -->
     <div class="span2">
-      <b>Churches</b> reduce the total value of the dealt Buildings by 3. This effect is cumulative, so two <b>Churches</b> will reduce the total value by 6. <b>Churches</b> want to be far away from the <b>Darkness</b> and other <b>Churches</b>.
+      <b>Churches</b> reduce the total value of the row and column they belong to by 3. This effect is cumulative, so two <b>Churches</b> will reduce the total value by 6. <b>Churches</b> want to be far away from the <b>Darkness</b> and other <b>Churches</b>.
       <ul>
         <li>+1 point for each square between the <b>Church</b> and the nearest <b>Darkness</b> or other <b>Church</b></li>
       </ul>
@@ -254,12 +249,12 @@
       Each <b>Builder Hut</b> allows building an additional building each round. You cannot build more than 13 value worth of buildings each round.
     </div> -->
 
-    <div class="tile" style="background: url(/assets/tiles.png) -200px 0"></div>
+    <div class="tile" style="background: #ffcd91 url(/assets/tiles.png) -200px 0"></div>
     <!-- <div class="hcenter">7</div> -->
     <div class="span2">
-      <b>Light Towers</b> provide <i>light</i> to nearby <b>Houses</b> and prevents the <b>Darkness</b> from spreading into nearby squares. Does not want to be nearby or in the same row or column as another <b>Light Tower</b>
+      <b>Light Towers</b> prevent the <b>Darkness</b> from spreading into nearby squares. Does not want to be nearby or in the same row or column as another <b>Light Tower</b>
       <ul>
-        <li>+1 point if not nearby or in the same row or column as another <b>Light Tower</b></li>
+        <li>+2 point if not nearby or in the same row or column as another <b>Light Tower</b></li>
       </ul>
     </div>
 
@@ -272,9 +267,10 @@
   </div>
   <div>
     <div><b>Round:</b> <span id="roundS">1</span></div>
-    <div><b>Building Tiles</b> (total value: <span id="totalValue"></span>)</div>
+    <div><b>Tiles:</b> <!--(total value: <span id="totalValue"></span>)--></div>
     <div id="available"></div>
-    <button id="reroll">Reroll</button>
+    <!-- <button id="reroll">Reroll</button> -->
+    <button id="rotate">Rotate</button>
     <div id="rules">
     <div>
       <b>Objective</b>
@@ -286,15 +282,15 @@
     <div>
       <b>How to Play</b>
       <ul>
-        <li>You start the game by placing 3 <b>Houses</b></li>
-        <li>Each round you are dealt 1 Building for every <b>House</b> you have built</li>
-        <li>You must choose one of the Buildings to place. You may reroll once per round to get a new set of Building</li>
-        <li>Each Building has a value</li>
-        <li>If the total value of all dealt Buildings is equal to or greater than 13, the <b>Darkness</b> will grow and you cannot reroll that round</li>
-        <li>When placing a Building, if the total value of all Buildings in the same row or column as the placed building is equal to or great than 13, the <b>Darkness</b> will grow</li>
+        <li>Each round you choose a Tile to place.</li>
+        <li>Each Tile has a building, a value, and an area.</li>
+        <li>You cannot place a Tile if any part of its area overlaps another building or area.</li>
+        <!-- <li>If the total value of all dealt Buildings is equal to or greater than 13, the <b>Darkness</b> will grow and you cannot reroll that round</li> -->
+        <li>When placing a Tile, if the total value of all buildings in the same row or column as the placed building is equal to or great than 13, the <b>Darkness</b> will grow</li>
         <li><u>Be aware</u> that <b>Darkness</b> can overtake other tiles and even your buildings (removing them from the board) unless you have a <b>Light Tower</b> nearby.</li>
-        <li>At the start of round 13 the <b>Darkness</b> will grow twice
-        <li>Starting on round 13 and above, the <b>Darkness</b> intensifies and will grow twice instead of once when the value of all dealt Buildings is 13 or more</li>
+<!--         <li>At the start of round 13 the <b>Darkness</b> will grow twice.</li>
+        <li>Starting on round 13 and above, the <b>Darkness</b> intensifies and will grow twice instead of once when the value of all dealt Buildings is 13 or more.</li> -->
+        <li>For scoring purposes, nearby and adjacency is calculated using the building itself and not the area of the Tile.
       </ul>
     </div>
   </div>
