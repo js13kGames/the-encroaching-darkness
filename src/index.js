@@ -5,7 +5,7 @@ import { setImagePath, loadImage, getSeed, seedRand, rand, randInt, init, initPo
   setImagePath('./assets')
   const tileSheet = await loadImage('tiles.png');
 
-  seedRand()
+  seedRand(1726182159003)
   console.log(getSeed())
 
   init();
@@ -622,7 +622,6 @@ import { setImagePath, loadImage, getSeed, seedRand, rand, randInt, init, initPo
         }
         shape[row][col] = name;
 
-        console.log({shape, row, col, name});
         buttonCanvas.width = numCols * 50 + 2;
         buttonCanvas.height = numRows * 50 + 2;
 
@@ -838,7 +837,7 @@ import { setImagePath, loadImage, getSeed, seedRand, rand, randInt, init, initPo
   }
   window.isNearbyLightTower = isNearbyLightTower;
 
-  onPointer('down', () => {
+  onPointer('up', () => {
     if (!placing) {
       return;
     }
@@ -848,19 +847,30 @@ import { setImagePath, loadImage, getSeed, seedRand, rand, randInt, init, initPo
 
     const [ name, value, shape ] = placing;
     const [ buildingRow, buildingCol ] = getShapeBuildingPos(shape);
-    placing.push([r, c]);
 
     // can't place already something there
     for (let row = 0; row < shape.length; row++) {
       for (let col = 0; col < shape[0].length; col++) {
+        if (!shape[row][col]) {
+          continue;
+        }
+
+        const tileR = r + row - buildingRow;
+        const tileC = c + col - buildingCol;
+
         if (
-          shape[row][col] &&
-          grid[r + row - buildingRow][c + col - buildingCol]
+          tileR < 0 ||
+          tileR >= size ||
+          tileC < 0 ||
+          tileC >= size ||
+          grid[tileR][tileC]
         ) {
           return;
         }
       }
     }
+
+    placing.push([r, c]);
 
     // let areaValue = buildings[placing];
     // let dupArea;
@@ -871,17 +881,24 @@ import { setImagePath, loadImage, getSeed, seedRand, rand, randInt, init, initPo
     // });
     // const [ name ] = placing;
     let rowValue = buildings[name];
-    let dupRow;
+    // let dupRow;
     let colValue = buildings[name];
-    let dupCol;
-    for (let i = 0; i < 11; i++) {
-      const rowName = grid[r][i][0];
-      rowValue += buildings[rowName] ?? 0;
-      dupRow ||= rowName == name
+    // let dupCol;
+    for (let i = 0; i < size; i++) {
+      if (isBuildingPos(r, i)) {
+        rowValue += buildings[ grid[r][i][0] ];
+      }
+      if (isBuildingPos(i, c)) {
+        colValue += buildings[ grid[i][c][0] ];
+      }
 
-      const colName = grid[i][c][0];
-      colValue += buildings[colName] ?? 0;
-      dupCol ||= colName == name
+      // const rowName = grid[r][i][0];
+      // rowName += buildings[rowName] ?? 0;
+      // dupRow ||= rowName == name
+
+      // const colName = grid[i][c][0];
+      // colValue += buildings[colName] ?? 0;
+      // dupCol ||= colName == name
     }
 
     for (let row = 0; row < shape.length; row++) {
@@ -936,6 +953,12 @@ import { setImagePath, loadImage, getSeed, seedRand, rand, randInt, init, initPo
         }
       }
     }
+  }
+
+  function isBuildingPos(tileR, tileC) {
+    const tile = grid[tileR][tileC];
+
+    return tile[3]?.[0] == tileR && tile[3][1] == tileC;
   }
 
   // const fillColors = [
@@ -1106,10 +1129,7 @@ import { setImagePath, loadImage, getSeed, seedRand, rand, randInt, init, initPo
           else if (name == 2) {
             ctx.drawImage(tileSheet, x, y, 50, 50, c * 50, r * 50, 50, 50)
           }
-          else if (
-            tile[3]?.[0] == r &&
-            tile[3][1] == c
-          ) {
+          else if (isBuildingPos(r, c)) {
             ctx.drawImage(tileSheet, x, y, 50, 50, c * 50, r * 50, 50, 50)
             ctx.fillStyle = 'black';
             ctx.fillText(buildings[name], c * 50 + 9, r * 50 + 11);
