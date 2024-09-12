@@ -36,8 +36,8 @@
     }
 
     .tile {
-      width: 40px;
-      height: 40px;
+      width: 50px;
+      height: 50px;
       display: inline-flex;
       justify-content: center;
       align-items: center;
@@ -45,7 +45,7 @@
     }
 
     .span2 {
-      grid-column: 3 / -1;
+      grid-column: 2 / -1;
     }
 
     .heading {
@@ -145,9 +145,29 @@
       flex-direction: column;
       gap: 1rem;
     }
+
+    canvas {
+      background: #101720;
+      outline: 1px solid;
+      cursor: pointer;
+      background: url(/assets/haze2.png);
+      animation-name: MOVE-BG;
+      animation-duration: 100s;
+      animation-timing-function: linear;
+      animation-iteration-count: infinite;
+    }
+
+    @keyframes MOVE-BG {
+      from {
+        background-position: 0 0;
+      }
+      to {
+        background-position: 100% 0;
+      }
+    }
   </style>
   <div>
-    <canvas id="canvas" style="outline: 1px solid;" width="500" height="500"></canvas>
+    <canvas id="canvas" width="500" height="500"></canvas>
   </div>
   <div class="grid">
     <div class="tile adjacent" style="outline: 0"></div>
@@ -156,34 +176,42 @@
     <div class="vcenter" style="margin-left: -1rem;">Nearby</div>
 
     <div class="heading">Tile</div>
-    <div class="heading">Value</div>
+    <!-- <div class="heading">Value</div> -->
     <div class="heading span2">Description and Scoring</div>
 
-    <div class="tile" style="background: purple;"></div>
-    <div></div>
+    <div class="tile" style="background: url(/assets/haze2.png);"></div>
+    <!-- <div></div> -->
     <div class="span2"><b>Darkness</b>. Cannot build buildings on these squares.</div>
 
-    <div class="tile">H</div>
-    <div class="hcenter">1</div>
+    <div class="tile" style="background: #c5dec1 url(/assets/tiles.png) -100px 0"></div>
+    <!-- <div></div> -->
+    <div class="span2"><b>Trees</b>. Cannot build buildings on these squares.</div>
+
+    <div class="tile" style="background: #dfdfdf url(/assets/tiles.png) -250px 0"></div>
+    <!-- <div></div> -->
+    <div class="span2"><b>Stone</b>. Cannot build buildings on these squares.</div>
+
+    <div class="tile" style="background: url(/assets/tiles.png) -150px 0"></div>
+    <!-- <div class="hcenter">1</div> -->
     <div class="span2">
-      <b>Houses</b> need <i>food</i>, <i>water</i>, and <i>light</i>, and they don't want to live nearby <b>Darkness</b>. Each <b>House</b> allows drawing an additional Building Tile per round.
+      <b>Houses</b> need <i>food</i>, <i>water</i>, and <i>light</i>, and they don't want to live nearby <b>Darkness</b>. Each <b>House</b> allows drawing an additional Building per round.
       <ul>
         <li>+2 points if not nearby <b>Darkness</b></li>
         <li>-1 point for each unfulfilled need (<i>food</i>, <i>water</i>, and <i>light</i>)</li>
       </ul>
     </div>
 
-    <div class="tile">W</div>
-    <div class="hcenter">2</div>
+    <div class="tile" style="background: url(/assets/tiles.png) -400px 0"></div>
+    <!-- <div class="hcenter">2</div> -->
     <div class="span2">
-      <b>Wells</b> provide <i>water</i> to adjacent <b>Houses</b>.
+      <b>Wells</b> provide <i>water</i> to each adjacent <b>House</b>.
       <ul>
         <li>+1 point</li>
       </ul>
     </div>
 
-    <div class="tile">F</div>
-    <div class="hcenter">3</div>
+    <div class="tile" style="background: url(/assets/tiles.png) -50px 0"></div>
+    <!-- <div class="hcenter">3</div> -->
     <div class="span2">
       <b>Farms</b> provide <i>food</i> for up to 2 <b>Houses</b>.
       <ul>
@@ -191,43 +219,48 @@
       </ul>
     </div>
 
-    <div class="tile">LM</div>
-    <div class="hcenter">4</div>
+    <div class="tile" style="background: url(/assets/tiles.png) -300px 0"></div>
+    <!-- <div class="hcenter">4</div> -->
     <div class="span2">
-      <b>Lumber Mills</b> add <b>Church</b> and <b>Builder Hut</b> to the deck (these cards are not available until this is built). <b>Houses</b> don't want to be nearby them.
+      <b>Sawmills</b> increase the chance to draw a <b>Farm</b> or <b>Church</b> by 25% (they start at 0%). <b>Houses</b> don't want to be nearby them.
       <ul>
-        <li>+2 point if not nearby a <b>House</b></li>
+        <li>+1 point for each nearby <b>Tree</b></li>
+        <li>-1 point if nearby a <b>House</b></li>
       </ul>
     </div>
 
-    <div class="tile">S</div>
-    <div class="hcenter">5</div>
+    <div class="tile" style="background: url(/assets/tiles.png) -350px 0"></div>
+    <!-- <div class="hcenter">5</div> -->
     <div class="span2">
-      <b>Stone Masons</b> add <!--<b>Wall</b> and--> <b>Light Tower</b> to the deck (these cards are not available until this is built). <b>Houses</b> don't want to be nearby them.
+      <b>Stone Masons</b> increase the chance to draw a <!--<b>Wall</b> and--> <b>Light Tower</b> by 20% (they start at 0%). <b>Houses</b> don't want to be nearby them.
       <ul>
-        <li>+2 point if not nearby a <b>House</b></li>
+        <li>+1 point for each nearby <b>Stone</b></li>
+        <li>-1 point if nearby a <b>House</b></li>
       </ul>
     </div>
 
-    <div class="tile">C</div>
-    <div class="hcenter">6</div>
+    <div class="tile" style="background: url(/assets/tiles.png)"></div>
+    <!-- <div class="hcenter">6</div> -->
     <div class="span2">
-      <b>Churches</b> reduce the total value of the Building Tiles by 3. This effect is cumulative, so two <b>Churches</b> will reduce the total value by 6. <b>Churches</b> want to be far away from the <b>Darkness</b> and other <b>Churches</b>.
+      <b>Churches</b> reduce the total value of the dealt Buildings by 3. This effect is cumulative, so two <b>Churches</b> will reduce the total value by 6. <b>Churches</b> want to be far away from the <b>Darkness</b> and other <b>Churches</b>.
       <ul>
         <li>+1 point for each square between the <b>Church</b> and the nearest <b>Darkness</b> or other <b>Church</b></li>
       </ul>
     </div>
 
-    <div class="tile">B</div>
+    <!-- <div class="tile">B</div>
     <div class="hcenter">7</div>
     <div class="span2">
       Each <b>Builder Hut</b> allows building an additional building each round. You cannot build more than 13 value worth of buildings each round.
-    </div>
+    </div> -->
 
-    <div class="tile">LT</div>
-    <div class="hcenter">8</div>
+    <div class="tile" style="background: url(/assets/tiles.png) -200px 0"></div>
+    <!-- <div class="hcenter">7</div> -->
     <div class="span2">
-      <b>Light Towers</b> provide <i>light</i> to nearby <b>Houses</b> and prevents the <b>Darkness</b> from spreading into nearby squares.
+      <b>Light Towers</b> provide <i>light</i> to nearby <b>Houses</b> and prevents the <b>Darkness</b> from spreading into nearby squares. Does not want to be nearby or in the same row or column as another <b>Light Tower</b>
+      <ul>
+        <li>+1 point if not nearby or in the same row or column as another <b>Light Tower</b></li>
+      </ul>
     </div>
 
     <!-- <div class="tile">Wa</div>
@@ -253,311 +286,19 @@
     <div>
       <b>How to Play</b>
       <ul>
-        <li>You start the game by placing 2 <b>Houses</b></li>
-        <li>Each round you are dealt 1 Building Tile for every <b>House</b> you have built</li>
-        <li>You must choose one of the Building Tiles to build. You may reroll once per round to get a new set of Building Tiles</li>
-        <li>Each Building Tile has a value</li>
-        <li>If the total value of all dealt tiles is equal to or greater than 13, the <b>Darkness</b> will spread and you cannot reroll that round</li>
-        <li>At the start of round 13 the <b>Darkness</b> will spread twice
-        <li>Starting on round 13 and above, the <b>Darkness</b> intensifies and will spread twice instead of once when the value of all dealt tiles is 13 or more</li>
+        <li>You start the game by placing 3 <b>Houses</b></li>
+        <li>Each round you are dealt 1 Building for every <b>House</b> you have built</li>
+        <li>You must choose one of the Buildings to place. You may reroll once per round to get a new set of Building</li>
+        <li>Each Building has a value</li>
+        <li>If the total value of all dealt Buildings is equal to or greater than 13, the <b>Darkness</b> will grow and you cannot reroll that round</li>
+        <li>When placing a Building, if the total value of all Buildings in the same row or column as the placed building is equal to or great than 13, the <b>Darkness</b> will grow</li>
+        <li><u>Be aware</u> that <b>Darkness</b> can overtake other tiles and even your buildings (removing them from the board) unless you have a <b>Light Tower</b> nearby.</li>
+        <li>At the start of round 13 the <b>Darkness</b> will grow twice
+        <li>Starting on round 13 and above, the <b>Darkness</b> intensifies and will grow twice instead of once when the value of all dealt Buildings is 13 or more</li>
       </ul>
     </div>
   </div>
 
-  <script src="./src/libs/kontra.js"></script>
-  <script>
-  const { randInt, init, initPointer, onPointer, GameLoop } = kontra;
-
-  init();
-  const pointer = initPointer();
-
-  const size = 11; // can't go smaller than 9
-  const cells = size * size;
-  canvas.width = size * 50;
-  canvas.height = size * 50;
-  const ctx = canvas.getContext('2d');
-  const grid = [];
-  window.indices = [];
-  window.placing = '';
-
-  for (let r = 0; r < size; r++) {
-    grid[r] = [];
-    for (let c = 0; c < size; c++) {
-      grid[r][c] = 0;
-    }
-  }
-
-  function row(i) {
-    return i / size | 0;
-  }
-
-  function col(i) {
-    return i % size | 0;
-  }
-
-  const third = size / 3 | 0;
-  const midStart = third + 1;
-  const midEnd = size - third;
-  const midSize = midEnd - midStart + 1;
-
-  // avoid darkness in the middle
-  // for (let r = midStart - 1; r < midEnd; r++) {
-  //   for (let c = midStart - 1; c < midEnd; c++) {
-  //     grid[r][c] = -1;
-  //   }
-  // }
-
-  for (let i = 0; i < cells; i++) {
-    const r = row(i);
-    const c = col(i);
-
-    if (grid[r][c] == -1) {
-      continue;
-    }
-
-    if ((i+1) % 13 == 0) {
-      grid[r][c] = 0.5;
-      grid[r][size - 1 - c] = 0.5;
-      grid[c][r] = 0.5;
-      grid[c][size - 1 - r] = 0.5;
-    }
-
-    if ((cells - i) % 13 == 0) {
-      grid[r][c] = 0.5;
-      grid[r][size - 1 - c] = 0.5;
-      grid[c][r] = 0.5;
-      grid[c][size - 1 - r] = 0.5;
-    }
-  }
-
-  for (let r = 0; r < size; r++) {
-    for (let c = 0; c < size; c++) {
-      if (grid[r][c] == 0.5) {
-        indices.push(r * size + c);
-        grid[r][c] = 0;
-      }
-    }
-  }
-
-  let count = 0;
-  while (count < 13) {
-    spreadDarkness(false);
-    count++;
-  }
-
-  const buildings = {
-    H: 1,
-    W: 2,
-    F: 3,
-    LM: 4,
-    SM: 5,
-    C: 6,
-    B: 7,
-    LT: 8,
-    Wa: 9
-  };
-
-  const buildingPool = ['H', 'W', 'F', 'LM', 'SM'];
-  const built = ['H', 'H'];
-  let round = 1;
-
-  reroll.addEventListener('click', () => {
-    available.innerHTML = '';
-    getCards();
-    reroll.setAttribute('disabled', '');
-  });
-
-  getCards();
-
-  function getCards() {
-    setTimeout(() => {
-      let total = 0;
-
-      for (let i = 0; i < built.filter(b => b == 'H').length; i++) {
-        const name = buildingPool[ randInt(0, buildingPool.length - 1) ];
-        const value = buildings[name];
-        const btn = document.createElement('button');
-        btn.setAttribute('class', 'available');
-        btn.innerHTML = `
-          <b>${name}</b>
-          <span class="value">${value}</span>
-        `;
-        btn.addEventListener('click', () => {
-          placing = name;
-          btn.classList.add('selected');
-        });
-
-        total += value;
-        available.append(btn);
-      }
-
-      built.map(b => {
-        if (b == 'C') {
-          total -= 3;
-        }
-      });
-      totalValue.textContent = total;
-
-      if (total >= 13) {
-        spreadDarkness();
-
-        // spread darkness twice starting from round 13 on
-        if (round >= 13) {
-          spreadDarkness();
-        }
-
-        setTimeout(() => {
-          alert(`Total of all cards is ${total}. Darkness spreads${round >= 13 ? ' twice' : ''}`);
-        }, 100);
-        reroll.setAttribute('disabled', '');
-      }
-    }, 100);
-  }
-
-  function spreadDarkness(checkLightTower = true) {
-    const index = randInt(0, indices.length - 1);
-    const i = indices.splice(index, 1)[0];
-    const r = row(i);
-    const c = col(i);
-
-    // tile already occupied so try again
-    if (grid[r][c]) {
-      return spreadDarkness();
-    }
-
-    // light tower prevents spreading of darkness to nearby
-    // tiles so try again
-    if (checkLightTower && isNearbyLightTower(r, c)) {
-      return spreadDarkness();
-    }
-
-    grid[r][c] = -1;
-  }
-
-  function getAdjacentTiles(tileR, tileC) {
-    return getNearbyTiles(tileR, tileC).filter(([r, c]) => {
-      return r == tileR || c == tileC;
-    });
-  }
-
-  function getNearbyTiles(tileR, tileC) {
-    const tiles = [];
-
-    for (let r = tileR - 1; r <= tileR + 1; r++) {
-      if (r < 0 || r >= size) {
-        continue;
-      }
-
-      for (let c = tileC - 1 ; c <= tileC + 1; c++) {
-        if (
-          c < 0 ||
-          c >= size ||
-          (r == tileR && c == tileC)
-        ) {
-          continue;
-        }
-
-        tiles.push([r, c]);
-      }
-    }
-
-    return tiles;
-  }
-
-  function isNearbyLightTower(tileR, tileC) {
-    return getNearbyTiles(tileR, tileC).some(([r, c]) => {
-      return grid[r][c] == 'LT'
-    });
-  }
-
-  onPointer('down', () => {
-    if (!placing) {
-      return;
-    }
-
-    const r = pointer.y / 50 | 0;
-    const c = pointer.x / 50 | 0;
-
-    if (!grid[r][c]) {
-      grid[r][c] = placing;
-      reroll.removeAttribute('disabled');
-      built.push(placing);
-
-      if (placing == 'LM') {
-        buildingPool.push('C', 'B');
-      }
-      else if (placing == 'SM') {
-        buildingPool.push('LT'/*, 'Wa'*/);
-      }
-      // else if (placing == 'LT') {
-      //   getNearbyTiles(r, c).map(([tileR, tileC]) => {
-      //     if (grid[tileR][tileC] == -1) {
-      //       grid[tileR][tileC] = 0;
-      //     }
-      //   });
-      // }
-
-      placing = 0;
-      round++;
-      roundS.textContent = round;
-      available.innerHTML = '';
-
-      // darkness spreads twice on round 13
-      if (round == 13) {
-        alert(`The Darkness intensifies`);
-        spreadDarkness();
-        spreadDarkness();
-      }
-
-      if (round <= 16) {
-        getCards();
-      }
-    }
-  });
-
-  ctx.font = '18px Arial';
-  ctx.textBaseline = 'middle';
-  ctx.textAlign = 'center';
-  GameLoop({
-    render() {
-      ctx.strokeStyle = 'black';
-
-      for (let r = 0; r < size; r++) {
-        for (let c = 0; c < size; c++) {
-
-          ctx.strokeRect(c * 50, r * 50, 50, 50);
-
-          if (!grid[r][c]) {
-            continue;
-          }
-
-          if (grid[r][c] == -1) {
-            ctx.fillStyle = 'purple';
-            ctx.fillRect(c * 50, r * 50, 50, 50);
-          }
-          else {
-            ctx.fillStyle = 'black';
-            ctx.fillText(grid[r][c], c * 50 + 25, r * 50 + 25);
-          }
-        }
-      }
-
-      if (placing) {
-        ctx.fillStyle = 'black';
-        const r = pointer.y / 50 | 0;
-        const c = pointer.x / 50 | 0;
-
-        if (grid[r] && !grid[r][c]) {
-          ctx.save();
-          ctx.globalAlpha = 0.25
-          ctx.fillRect(c * 50, r * 50, 50, 50);
-          ctx.restore();
-
-          ctx.fillText(placing, c * 50 + 25, r * 50 + 25);
-        }
-      }
-    }
-  }).start();
-  </script>
+  <script type="module" src="./src/index.js"></script>
 </body>
 </html>

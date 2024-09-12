@@ -2,7 +2,7 @@
  * @preserve
  * Kontra.js v10.0.2
  */
-var kontra = (function () {
+globalThis.kontra = (function () {
 
   /**
    * A group of helpful functions that are commonly used for game development. Includes things such as converting between radians and degrees and getting random integers.
