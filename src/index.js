@@ -517,6 +517,7 @@ import { setImagePath, loadImage, getSeed, seedRand, rand, randInt, init, initPo
         total += await score(name);
         scoringTiles.length = 0;
         highlightTiles.length = 0;
+        await wait(1000);
       }
 
       finalScore.textContent = total;
