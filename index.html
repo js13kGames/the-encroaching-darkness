@@ -12,9 +12,9 @@
       grid-template-areas:
         'a b'
         'c b';
-      gap: 2.5rem;
-      grid-template-columns: 550px 1fr;
-      grid-template-rows: 550px 1fr;
+      gap: 0 2.5rem;
+      grid-template-columns: 600px 1fr;
+      grid-template-rows: 650px 1fr;
     }
 
     .grid {
@@ -101,7 +101,7 @@
     #available {
       display: flex;
       gap: 1rem;
-      min-height: 5rem;
+      min-height: 11rem;
       margin-top: 1rem;
     }
 
@@ -119,11 +119,15 @@
       max-width: 9.5rem;
       border: 1px solid;
       background: none;
-      padding: 1rem;
+      padding: 0.5rem;
       border-radius: 5px;
       display: flex;
       align-items: center;
       position: relative;
+    }
+
+    button.selected {
+      background: lightgray;
     }
 
     button.available:hover {
@@ -145,14 +149,37 @@
     }
 
     canvas {
-      background: #101720;
       outline: 1px solid;
+    }
+    canvas.play {
       cursor: pointer;
-      background: url(./assets/haze2.png);
+      background: #101720 url(./haze.png);
       animation-name: MOVE-BG;
       animation-duration: 100s;
       animation-timing-function: linear;
       animation-iteration-count: infinite;
+    }
+
+    .game {
+      position: relative;
+    }
+
+    .game button {
+      width: 9rem;
+      padding: 0.5rem 1rem;
+      position: absolute;
+      top: 50%;
+    }
+
+    canvas.play ~ button {
+      display: none;
+    }
+
+    #dailySeed {
+      left: 10%;
+    }
+    #randSeed {
+      right: calc(25% - 2rem);
     }
 
     @keyframes MOVE-BG {
@@ -163,9 +190,106 @@
         background-position: 100% 0;
       }
     }
+
+    .tile.H {
+      background: #fa8072 url(./tiles.png) -150px 0;
+    }
+    .tile.L {
+      background: #b3c6e0 url(./tiles.png) -400px 0;
+    }
+    .tile.F {
+      background: #f7e7aa url(./tiles.png) -50px 0;
+    }
+    .tile.LM {
+      background: #c9a999 url(./tiles.png) -300px 0;
+    }
+    .tile.SM {
+      background: #cfcfc4 url(./tiles.png) -350px 0;
+    }
+    .tile.C {
+      background: #CCBEF0 url(./tiles.png);
+    }
+    .tile.LT {
+      background: #ffcd91 url(./tiles.png) -200px 0;
+    }
+
+    #gameScore,
+    #final {
+      display: none;
+    }
+
+    .score {
+      display: flex;
+      gap: 1rem;
+      scale: 0.7;
+      margin-left: -6rem;
+    }
+
+    .score > div {
+      height: 50px;
+      display: flex;
+    }
+
+    .game .tile + * {
+      outline: 1px solid;
+      width: 3rem;
+      font-size: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 50px;
+    }
+
+    #final {
+      position: absolute;
+      right: 0;
+      gap: 0;
+    }
   </style>
-  <div>
-    <canvas id="canvas" width="500" height="500"></canvas>
+  <div class="game">
+    <canvas id="canvas" width="550" height="550"></canvas>
+    <button id="dailySeed">Daily Seed</button>
+    <button id="randSeed">Random Seed</button>
+    <div id="gameScore" class="score">
+      <div>
+        <div class="tile H"></div>
+        <div id="HScore"></div>
+      </div>
+
+      <div>
+        <div class="tile L"></div>
+        <div id="LScore"></div>
+      </div>
+
+      <div>
+        <div class="tile F"></div>
+        <div id="FScore"></div>
+      </div>
+
+      <div>
+        <div class="tile LM"></div>
+        <div id="LMScore"></div>
+      </div>
+
+      <div>
+        <div class="tile SM"></div>
+        <div id="SMScore"></div>
+      </div>
+
+      <div>
+        <div class="tile C"></div>
+        <div id="CScore"></div>
+      </div>
+
+      <div>
+        <div class="tile LT"></div>
+        <div id="LTScore"></div>
+      </div>
+    </div>
+    <div id="final" class="score">
+      <div class="tile">Total</div>
+      <div id="finalScore"></div>
+    </div>
   </div>
   <div class="grid">
     <div class="tile adjacent" style="outline: 0"></div>
@@ -174,50 +298,42 @@
     <div class="vcenter" style="margin-left: -1rem;">Nearby</div>
 
     <div class="heading">Tile</div>
-    <!-- <div class="heading">Value</div> -->
     <div class="heading span2">Description and Scoring</div>
 
-    <div class="tile" style="background: url(./assets/haze2.png);"></div>
-    <!-- <div></div> -->
+    <div class="tile" style="background: url(./haze.png);"></div>
     <div class="span2"><b>Darkness</b>. Cannot build buildings on these squares.</div>
 
-    <div class="tile" style="background: #c5dec1 url(./assets/tiles.png) -100px 0"></div>
-    <!-- <div></div> -->
+    <div class="tile" style="background: #c5dec1 url(./tiles.png) -100px 0"></div>
     <div class="span2"><b>Forest</b>. Cannot build buildings on these squares.</div>
 
-    <div class="tile" style="background: #dfdfdf url(./assets/tiles.png) -250px 0"></div>
-    <!-- <div></div> -->
+    <div class="tile" style="background: #dfdfdf url(./tiles.png) -250px 0"></div>
     <div class="span2"><b>Mountain</b>. Cannot build buildings on these squares.</div>
 
-    <div class="tile" style="background: #fa8072 url(./assets/tiles.png) -150px 0"></div>
-    <!-- <div class="hcenter">1</div> -->
+    <div class="tile H"></div>
     <div class="span2">
       <b>Houses</b> want to be adjacent lots of other <b>Houses</b>.
       <ul>
-        <li>+2 points for each <b>House</b> in a group of 2 or more adjacent <b>Houses</b></li>
+        <li>+2 points for each <b>House</b> in a group of at least two adjacent <b>Houses</b>.</li>
       </ul>
     </div>
 
-    <div class="tile" style="background: #b3c6e0 url(./assets/tiles.png) -400px 0"></div>
-    <!-- <div class="hcenter">2</div> -->
+    <div class="tile L"></div>
     <div class="span2">
-      <b>Lakes</b> want to be nearby lots of other tiles.
+      <b>Lakes</b> want to be nearby lots of other things.
       <ul>
-        <li>+1 point for each nearby tile</li>
+        <li>+1 point for each nearby building, <b>Forest</b>, or <b>Mountain</b></li>
       </ul>
     </div>
 
-    <div class="tile" style="background: #f7e7aa url(./assets/tiles.png) -50px 0"></div>
-    <!-- <div class="hcenter">3</div> -->
+    <div class="tile F"></div>
     <div class="span2">
       <b>Farms</b> want to be part of large areas.
       <ul>
-        <li>+1 point for each square in a <b>Farms</b> shape.</li>
+        <li>+1 point for each square in a <b>Farms</b> shape (but only if the Farm building is not covered by darkness).</li>
       </ul>
     </div>
 
-    <div class="tile" style="background: #c9a999 url(./assets/tiles.png) -300px 0"></div>
-    <!-- <div class="hcenter">4</div> -->
+    <div class="tile LM"></div>
     <div class="span2">
       <b>Sawmills</b> want to be nearby <b>Forests</b>.
       <ul>
@@ -225,8 +341,7 @@
       </ul>
     </div>
 
-    <div class="tile" style="background: #cfcfc4 url(./assets/tiles.png) -350px 0"></div>
-    <!-- <div class="hcenter">5</div> -->
+    <div class="tile SM"></div>
     <div class="span2">
       <b>Stone Masons</b> want to be nearby <b>Mountains</b>.
       <ul>
@@ -234,43 +349,27 @@
       </ul>
     </div>
 
-    <div class="tile" style="background: #CCBEF0 url(./assets/tiles.png)"></div>
-    <!-- <div class="hcenter">6</div> -->
+    <div class="tile C"></div>
     <div class="span2">
-      <!--<b>Churches</b> reduce the total value of the row and column they belong to by 3. This effect is cumulative, so two <b>Churches</b> will reduce the total value by 6. --><b>Churches</b> want to be far away from the <b>Darkness</b> and other <b>Churches</b>.
+      <b>Churches</b> want to be far away from the <b>Darkness</b> and other <b>Churches</b>.
       <ul>
         <li>+1 point for each square between the <b>Church</b> and the nearest <b>Darkness</b> or other <b>Church</b></li>
       </ul>
     </div>
 
-    <!-- <div class="tile">B</div>
-    <div class="hcenter">7</div>
-    <div class="span2">
-      Each <b>Builder Hut</b> allows building an additional building each round. You cannot build more than 13 value worth of buildings each round.
-    </div> -->
-
-    <div class="tile" style="background: #ffcd91 url(./assets/tiles.png) -200px 0"></div>
-    <!-- <div class="hcenter">7</div> -->
+    <div class="tile LT"></div>
     <div class="span2">
       <b>Light Towers</b> prevent the <b>Darkness</b> from spreading into nearby squares. Does not want to be nearby or in the same row or column as another <b>Light Tower</b>
       <ul>
         <li>+2 point if not nearby or in the same row or column as another <b>Light Tower</b></li>
       </ul>
     </div>
-
-    <!-- <div class="tile">Wa</div>
-    <div class="hcenter">9</div>
-    <div class="span2">
-      Each building in an area fully enclosed by <b>Walls</b> scores 2x their point value. <b>Walls</b> can be built in lengths of 1, 2, or 3.
-    </div> -->
-
   </div>
   <div>
     <div><b>Round:</b> <span id="roundS">1</span></div>
-    <div><b>Tiles:</b> <!--(total value: <span id="totalValue"></span>)--></div>
+    <div><b>Tiles:</b></div>
     <div id="available"></div>
-    <!-- <button id="reroll">Reroll</button> -->
-    <button id="rotate">Rotate</button>
+    <button id="rotate" style="margin-top: 1rem;">Rotate Tile (R)</button>
     <div id="rules">
     <div>
       <b>Objective</b>
@@ -283,16 +382,14 @@
       <b>How to Play</b>
       <ul>
         <li>Each round you choose a Tile to place.</li>
-        <li>Each Tile has a building, a value, and a shape.</li>
-        <li>You cannot place a Tile if any part of its shape overlaps another building or shape.</li>
-        <li>Press "R" to rotate the shape, or the "Rotate" button below the Tiles.</li>
-        <!-- <li>If the total value of all dealt Buildings is equal to or greater than 13, the <b>Darkness</b> will grow and you cannot reroll that round</li> -->
+        <li>Each Tile has a building (the image), a value (the number), and a shape.</li>
+        <li>You cannot place a Tile if any part of its shape overlaps the <b>Darkness</b>, <b>Forest</b>, <b>Mountain</b>, or another building or shape.</li>
+        <li>Press "R" to rotate the shape, or press the "Rotate Tile" button below the Tiles.</li>
         <li>When placing a Tile, if the total value of all buildings in the same row or column as the placed building is equal to or great than 13, the <b>Darkness</b> will grow.</li>
         <li>At the end of every round the <b>Darkness</b> will grow.</li>
-        <li><u>Be aware</u> that <b>Darkness</b> can overtake other tiles and even your buildings (removing them from the board) unless you have a <b>Light Tower</b> nearby.</li>
-<!--         <li>At the start of round 13 the <b>Darkness</b> will grow twice.</li>
-        <li>Starting on round 13 and above, the <b>Darkness</b> intensifies and will grow twice instead of once when the value of all dealt Buildings is 13 or more.</li> -->
-        <li>For scoring purposes, nearby and adjacency is calculated using the building square and not the shape of the Tile.</li>
+        <li><u>Be aware</u> that <b>Darkness</b> can overtake other tiles and even your buildings (removing them from the board) unless you have a <b>Light Tower</b> nearby. A building that is covered by <b>Darkness</b> does not score points or contribute to points of other Tiles.</li>
+        <li>On round 13 the <b>Darkness</b> will grow twice.</li>
+        <li>For scoring purposes, nearby and adjacency is calculated <u>using the building square</u> (the image) and not the shape of the Tile.</li>
       </ul>
     </div>
   </div>
