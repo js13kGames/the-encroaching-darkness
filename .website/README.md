@@ -1,4 +1,7 @@
 ---
+genres:
+  - strategy
+  - tabletop
 post: https://stevenklambert.com/writing/encroaching-darkness-postmortem/
 # See github.com/js13kGames/hello-world for supported frontmatter
 ---
